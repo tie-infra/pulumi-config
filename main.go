@@ -15,10 +15,10 @@ func main() {
 func run(ctx *pulumi.Context) error {
 	conf := config.New(ctx, "")
 	domain := conf.Require("domain")
-	return setupDNS(ctx, domain)
+	return setupZone(ctx, domain)
 }
 
-func setupDNS(ctx *pulumi.Context, domain string) error {
+func setupZone(ctx *pulumi.Context, domain string) error {
 	zone, err := cloudflare.NewZone(ctx, domain, &cloudflare.ZoneArgs{
 		Zone: pulumi.String(domain),
 	})
@@ -29,27 +29,28 @@ func setupDNS(ctx *pulumi.Context, domain string) error {
 	if _, err := cloudflare.NewZoneSettingsOverride(ctx, domain, &cloudflare.ZoneSettingsOverrideArgs{
 		ZoneId: zone.ID(),
 		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
-			Ssl:           pulumi.StringPtr("strict"),
-			MinTlsVersion: pulumi.StringPtr("1.2"),
-			ZeroRtt:       pulumi.StringPtr("on"),
+			Ssl:           pulumi.String("strict"),
+			MinTlsVersion: pulumi.String("1.2"),
+			ZeroRtt:       pulumi.String("on"),
+			UniversalSsl:  pulumi.String("on"),
 		},
 	}); err != nil {
 		return err
 	}
 
-	if err := setupHosts(ctx, zone); err != nil {
+	if err := setupAddresses(ctx, zone); err != nil {
 		return err
 	}
-	if err := setupWeb(ctx, zone); err != nil {
+	if err := setupAliases(ctx, zone); err != nil {
 		return err
 	}
-	if err := setupMinecraft(ctx, zone); err != nil {
+	if err := setupServices(ctx, zone); err != nil {
 		return err
 	}
 	return nil
 }
 
-func setupHosts(ctx *pulumi.Context, zone *cloudflare.Zone) error {
+func setupAddresses(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 	const (
 		prefix    = "2a02:2168:8fec:f600:"
 		prefixISP = "2a02:2168:a0f:a2a3:"
@@ -94,18 +95,17 @@ func setupHosts(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 	return nil
 }
 
-func setupWeb(ctx *pulumi.Context, zone *cloudflare.Zone) error {
+func setupAliases(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 	_, err := cloudflare.NewRecord(ctx, "7157850e", &cloudflare.RecordArgs{
-		ZoneId:  zone.ID(),
-		Name:    pulumi.String("brim"),
-		Value:   pulumi.String("brim.ml"),
-		Type:    pulumi.String("CNAME"),
-		Proxied: pulumi.BoolPtr(true),
+		ZoneId: zone.ID(),
+		Name:   pulumi.String("brim"),
+		Value:  pulumi.String("brim.ml"),
+		Type:   pulumi.String("CNAME"),
 	})
 	return err
 }
 
-func setupMinecraft(ctx *pulumi.Context, zone *cloudflare.Zone) error {
+func setupServices(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 	_, err := cloudflare.NewRecord(ctx, "1490d796", &cloudflare.RecordArgs{
 		ZoneId: zone.ID(),
 		Name:   pulumi.String("mc"),
@@ -113,7 +113,6 @@ func setupMinecraft(ctx *pulumi.Context, zone *cloudflare.Zone) error {
 		Data: &cloudflare.RecordDataArgs{
 			Service:  pulumi.String("_minecraft"),
 			Proto:    pulumi.String("_tcp"),
-			Name:     pulumi.String("mc"),
 			Priority: pulumi.Int(0),
 			Weight:   pulumi.Int(0),
 			Port:     pulumi.Int(25565),
