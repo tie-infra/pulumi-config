@@ -37,7 +37,7 @@ func setupAliasedZone(ctx *pulumi.Context) error {
 		{"ab9173dd", "madara", "madara.tie.rip."},
 		{"8b913246", "saitama", "saitama.tie.rip."},
 		{"eaed6781", "tatsuya", "tatsuya.tie.rip."},
-		{"eaed6781", "brim", "brim.ml."},
+		{"405c0604", "brim", "brim.ml."},
 	}
 
 	for _, r := range records {
