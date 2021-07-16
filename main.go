@@ -25,6 +25,18 @@ func setupDNS(ctx *pulumi.Context, domain string) error {
 	if err != nil {
 		return err
 	}
+
+	if _, err := cloudflare.NewZoneSettingsOverride(ctx, domain, &cloudflare.ZoneSettingsOverrideArgs{
+		ZoneId: zone.ID(),
+		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
+			Ssl:           pulumi.StringPtr("strict"),
+			MinTlsVersion: pulumi.StringPtr("1.2"),
+			ZeroRtt:       pulumi.StringPtr("on"),
+		},
+	}); err != nil {
+		return err
+	}
+
 	if err := setupHosts(ctx, zone); err != nil {
 		return err
 	}
