@@ -1,2 +1,42 @@
 config:
-  tie-infra:domain: tie.rip
+  tie-infra:config:
+    zones:
+      - &default
+        domain: tie.rip
+        addresses:
+          roku:
+            - id: lan
+              address: 2a02:2168:8fec:f600::1
+            - id: wan
+              address: 2a02:2168:a0f:a2a3::3
+            - id: wan4
+              address: 95.84.246.62
+          ubernet:
+            - id: wan
+              addr: 2a02:2168:a0f:a2a3::4
+            - id: wan4
+              address: 188.32.206.130
+          madara:
+            - id: lan
+              address: 2a02:2168:8fec:f600::942
+          saitama:
+            - id: lan
+              address: 2a02:2168:8fec:f600::39f
+            - id: wan4
+              address: 188.255.3.141
+          tatsuya:
+            - id: wan
+              address: 2a02:2168:a0f:a2a3::2
+            - id: wan4
+              address: 37.110.66.21
+        aliases:
+          brim: brim.ml
+        services:
+          mc:
+            - id: minecraft1
+              service: _minecraft
+              proto: _tcp
+              host: brim.ml
+              port: 25565
+      - <<: *default
+        domain: tie.wtf
