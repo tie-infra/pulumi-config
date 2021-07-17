@@ -57,15 +57,17 @@ func setupZone(ctx *pulumi.Context, z *Zone) error {
 }
 
 func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
-	zone, err := cloudflare.NewZone(ctx, d.ID, &cloudflare.ZoneArgs{
+	resourceName := joinDash(z.ID, d.ID)
+
+	zone, err := cloudflare.NewZone(ctx, resourceName, &cloudflare.ZoneArgs{
 		Zone: pulumi.String(d.Name),
 	})
 	if err != nil {
 		return err
 	}
-	ctx.Export(joinDash(z.ID, d.ID), zone.ID())
+	ctx.Export(resourceName, zone.ID())
 
-	if _, err := cloudflare.NewZoneSettingsOverride(ctx, d.ID, &cloudflare.ZoneSettingsOverrideArgs{
+	if _, err := cloudflare.NewZoneSettingsOverride(ctx, resourceName, &cloudflare.ZoneSettingsOverrideArgs{
 		ZoneId: zone.ID(),
 		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
 			Ssl:           pulumi.String("strict"),
