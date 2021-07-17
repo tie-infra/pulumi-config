@@ -59,22 +59,28 @@ func setupZone(ctx *pulumi.Context, z *Zone) error {
 func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
 	resourceName := joinDash(z.ID, d.ID)
 
-	zone, err := cloudflare.NewZone(ctx, resourceName, &cloudflare.ZoneArgs{
-		Zone: pulumi.String(d.Name),
-	})
+	zone, err := cloudflare.NewZone(ctx, resourceName,
+		&cloudflare.ZoneArgs{
+			Zone: pulumi.String(d.Name),
+		},
+		pulumi.DeleteBeforeReplace(true),
+	)
 	if err != nil {
 		return err
 	}
 	ctx.Export(resourceName, zone.ID())
 
-	if _, err := cloudflare.NewZoneSettingsOverride(ctx, resourceName, &cloudflare.ZoneSettingsOverrideArgs{
-		ZoneId: zone.ID(),
-		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
-			Ssl:           pulumi.String("strict"),
-			MinTlsVersion: pulumi.String("1.2"),
-			UniversalSsl:  pulumi.String("on"),
+	if _, err := cloudflare.NewZoneSettingsOverride(ctx, resourceName,
+		&cloudflare.ZoneSettingsOverrideArgs{
+			ZoneId: zone.ID(),
+			Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
+				Ssl:           pulumi.String("strict"),
+				MinTlsVersion: pulumi.String("1.2"),
+				UniversalSsl:  pulumi.String("on"),
+			},
 		},
-	}); err != nil {
+		pulumi.DeleteBeforeReplace(true),
+	); err != nil {
 		return err
 	}
 
@@ -163,6 +169,7 @@ func setupService(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain
 		Data: &cloudflare.RecordDataArgs{
 			Service:  pulumi.String(srv.Service),
 			Proto:    pulumi.String(srv.Proto),
+			Name:     pulumi.String(srv.Name),
 			Priority: pulumi.Int(srv.Prio),
 			Weight:   pulumi.Int(srv.Weight),
 			Port:     pulumi.Int(srv.Port),
