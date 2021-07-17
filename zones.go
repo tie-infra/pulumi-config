@@ -8,48 +8,64 @@ import (
 )
 
 type Zone struct {
-	Domain string
-
-	Addresses map[string][]ZoneAddress
-	Aliases   map[string]string
-	Services  map[string][]ZoneService
-}
-
-type ZoneAddress struct {
 	ID string
 
-	Address string
+	Domains  []Domain
+	Hosts    []Host
+	Peers    []Peer
+	Services []Service
 }
 
-type ZoneService struct {
-	ID string
+type Domain struct {
+	ID   string
+	Name string
+}
 
+type Host struct {
+	Name      string
+	Addresses []HostAddress
+}
+
+type HostAddress struct {
+	ID    string
+	Value string
+}
+
+type Peer struct {
+	Name string
+	Host string
+}
+
+type Service struct {
+	ID      string
 	Service string
 	Proto   string
+	Name    string
 	Prio    int
 	Weight  int
 	Host    string
 	Port    int
 }
 
-func setupZones(ctx *pulumi.Context, conf *Config) error {
-	for _, z := range conf.Zones {
-		if err := setupZone(ctx, &z); err != nil {
+func setupZone(ctx *pulumi.Context, z *Zone) error {
+	for _, d := range z.Domains {
+		if err := setupZoneDomain(ctx, z, &d); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func setupZone(ctx *pulumi.Context, z *Zone) error {
-	zone, err := cloudflare.NewZone(ctx, z.Domain, &cloudflare.ZoneArgs{
-		Zone: pulumi.String(z.Domain),
+func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
+	zone, err := cloudflare.NewZone(ctx, d.ID, &cloudflare.ZoneArgs{
+		Zone: pulumi.String(d.Name),
 	})
 	if err != nil {
 		return err
 	}
+	ctx.Export(joinDash(z.ID, d.ID), zone.ID())
 
-	if _, err := cloudflare.NewZoneSettingsOverride(ctx, z.Domain, &cloudflare.ZoneSettingsOverrideArgs{
+	if _, err := cloudflare.NewZoneSettingsOverride(ctx, d.ID, &cloudflare.ZoneSettingsOverrideArgs{
 		ZoneId: zone.ID(),
 		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
 			Ssl:           pulumi.String("strict"),
@@ -61,95 +77,106 @@ func setupZone(ctx *pulumi.Context, z *Zone) error {
 		return err
 	}
 
-	if err := setupAddresses(ctx, zone, z); err != nil {
+	if err := setupHosts(ctx, zone, z, d); err != nil {
 		return err
 	}
-	if err := setupAliases(ctx, zone, z); err != nil {
+	if err := setupPeers(ctx, zone, z, d); err != nil {
 		return err
 	}
-	if err := setupServices(ctx, zone, z); err != nil {
+	if err := setupServices(ctx, zone, z, d); err != nil {
 		return err
 	}
 	return nil
 }
 
-func setupAddresses(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone) error {
-	for name, addresses := range z.Addresses {
-		for _, record := range addresses {
-			if err := setupAddress(ctx, zone, z, name, &record); err != nil {
-				return err
-			}
-		}
-	}
-	return nil
-}
-
-func setupAddress(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, name string, record *ZoneAddress) error {
-	resourceName := name + "." + z.Domain + "/" + record.ID
-
-	addr := record.Address
-
-	typ := "AAAA"
-	if !strings.Contains(addr, ":") {
-		typ = "A"
-	}
-
-	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.String(name),
-		Value:  pulumi.String(addr),
-		Type:   pulumi.String(typ),
-	})
-	return err
-}
-
-func setupAliases(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone) error {
-	for name, host := range z.Aliases {
-		if err := setupAlias(ctx, zone, z, name, host); err != nil {
+func setupHosts(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain) error {
+	for _, host := range z.Hosts {
+		if err := setupHost(ctx, zone, z, d, &host); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func setupAlias(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, name, host string) error {
-	resourceName := name + "." + z.Domain
-
-	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.String(name),
-		Value:  pulumi.String(host),
-		Type:   pulumi.String("CNAME"),
-	})
-	return err
-}
-
-func setupServices(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone) error {
-	for name, services := range z.Services {
-		for _, record := range services {
-			if err := setupService(ctx, zone, z, name, &record); err != nil {
-				return err
-			}
+func setupHost(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, host *Host) error {
+	for _, addr := range host.Addresses {
+		if err := setupHostAddress(ctx, zone, z, d, host, &addr); err != nil {
+			return err
 		}
 	}
 	return nil
 }
 
-func setupService(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, name string, record *ZoneService) error {
-	resourceName := name + "." + z.Domain + "/" + record.ID
+func setupHostAddress(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, host *Host, addr *HostAddress) error {
+	resourceName := joinDash(z.ID, d.ID, host.Name, addr.ID)
+
+	typ := "AAAA"
+	if !strings.Contains(addr.Value, ":") {
+		typ = "A"
+	}
+
+	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
+		ZoneId: zone.ID(),
+		Name:   pulumi.String(host.Name),
+		Value:  pulumi.String(addr.Value),
+		Type:   pulumi.String(typ),
+	})
+	return err
+}
+
+func setupPeers(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain) error {
+	for _, peer := range z.Peers {
+		if err := setupPeer(ctx, zone, z, d, &peer); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setupPeer(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, peer *Peer) error {
+	resourceName := joinDash(z.ID, d.ID, peer.Name)
+
+	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
+		ZoneId: zone.ID(),
+		Name:   pulumi.String(peer.Name),
+		Value:  pulumi.String(peer.Host),
+		Type:   pulumi.String("CNAME"),
+	})
+	return err
+}
+
+func setupServices(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain) error {
+	for _, srv := range z.Services {
+		if err := setupService(ctx, zone, z, d, &srv); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func setupService(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, srv *Service) error {
+	resourceName := joinDash(z.ID, d.ID, srv.Name, srv.ID)
 
 	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
 		ZoneId: zone.ID(),
 		Data: &cloudflare.RecordDataArgs{
-			Service:  pulumi.String(record.Service),
-			Proto:    pulumi.String(record.Proto),
-			Priority: pulumi.Int(record.Prio),
-			Weight:   pulumi.Int(record.Weight),
-			Port:     pulumi.Int(record.Port),
-			Target:   pulumi.String(record.Host),
+			Service:  pulumi.String(srv.Service),
+			Proto:    pulumi.String(srv.Proto),
+			Priority: pulumi.Int(srv.Prio),
+			Weight:   pulumi.Int(srv.Weight),
+			Port:     pulumi.Int(srv.Port),
+			Target:   pulumi.String(srv.Host),
 		},
-		Name: pulumi.String(name),
+		Name: pulumi.String(srv.Name),
 		Type: pulumi.String("SRV"),
 	})
 	return err
+}
+
+func joinDash(elems ...string) string {
+	return join("-", elems...)
+}
+
+func join(sep string, elems ...string) string {
+	return strings.Join(elems, sep)
 }

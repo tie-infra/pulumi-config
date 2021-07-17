@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
+	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
 
 func main() {
@@ -9,12 +10,17 @@ func main() {
 }
 
 func run(ctx *pulumi.Context) error {
-	conf, err := parseConfig(ctx)
-	if err != nil {
+	var zones []Zone
+
+	conf := config.New(ctx, "")
+	if err := conf.GetObject("zones", &zones); err != nil {
 		return err
 	}
-	if err := setupZones(ctx, conf); err != nil {
-		return err
+
+	for _, z := range zones {
+		if err := setupZone(ctx, &z); err != nil {
+			return err
+		}
 	}
 	return nil
 }
