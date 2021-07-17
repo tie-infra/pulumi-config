@@ -72,7 +72,6 @@ func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
 		Settings: &cloudflare.ZoneSettingsOverrideSettingsArgs{
 			Ssl:           pulumi.String("strict"),
 			MinTlsVersion: pulumi.String("1.2"),
-			ZeroRtt:       pulumi.String("on"),
 			UniversalSsl:  pulumi.String("on"),
 		},
 	}); err != nil {
