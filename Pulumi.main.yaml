@@ -24,7 +24,7 @@ config:
         - name: madara
           addresses:
             - id: lan
-              value: 2a02:2168:8fec:f600::942
+              value: 2a02:2168:8fec:f600::428
         - name: tatsuya
           addresses:
             - id: wan
@@ -34,7 +34,7 @@ config:
         - name: saitama
           addresses:
             - id: lan
-              value: 2a02:2168:8fec:f600::39f
+              value: 2a02:2168:8fec:f600::2dd
             - id: wan4
               value: 188.255.3.141
       peers:
