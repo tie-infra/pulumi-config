@@ -1,49 +1,19 @@
 config:
+  cloudflare:apiToken:
+    secure: AAABAG2Rk+xBtPinHSB3BwM8JrOykDFKDN7CwwvmblZ+TcTXktX3Bf0H7ASPdOyekbU64lypPQsLzNePPQEZcv+yQoqMPIxE
   tie-infra:zones:
-    - id: msk-homelab1
-      domains:
-        - id: rip
-          name: tie.rip
-        - id: wtf
-          name: tie.wtf
-      hosts:
-        - name: roku
-          addresses:
-            - id: lan
-              value: 2a02:2168:8fec:f600::1
-            - id: wan
-              value: 2a02:2168:a0f:a2a3::3
-            - id: wan4
-              value: 95.84.246.62
-        - name: ubernet
-          addresses:
-            - id: wan
-              value: 2a02:2168:a0f:a2a3::4
-            - id: wan4
-              value: 188.32.206.130
-        - name: madara
-          addresses:
-            - id: lan
-              value: 2a02:2168:8fec:f600::428
-        - name: tatsuya
-          addresses:
-            - id: wan
-              value: 2a02:2168:a0f:a2a3::2
-            - id: wan4
-              value: 37.110.66.21
-        - name: saitama
-          addresses:
-            - id: lan
-              value: 2a02:2168:8fec:f600::2dd
-            - id: wan4
-              value: 188.255.3.141
-      peers:
-        - name: brim
-          host: brim.ml
-      services:
-        - id: minecraft1
-          service: _minecraft
-          proto: _tcp
-          name: mc
-          host: brim.ml
-          port: 25565
+  - domains:
+    - id: rip
+      name: tie.rip
+    hosts: null
+    id: msk-homelab1
+    peers:
+    - host: brim.ml
+      name: brim
+    services:
+    - host: brim.ml
+      id: minecraft1
+      name: mc
+      port: 25565
+      proto: _tcp
+      service: _minecraft

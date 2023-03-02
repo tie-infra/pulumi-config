@@ -64,11 +64,11 @@ func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
 			Zone: pulumi.String(d.Name),
 		},
 		pulumi.DeleteBeforeReplace(true),
+		pulumi.IgnoreChanges([]string{"accountId"}),
 	)
 	if err != nil {
 		return err
 	}
-	ctx.Export(resourceName, zone.ID())
 
 	if _, err := cloudflare.NewZoneSettingsOverride(ctx, resourceName,
 		&cloudflare.ZoneSettingsOverrideArgs{
