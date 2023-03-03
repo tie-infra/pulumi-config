@@ -1,9 +1,16 @@
 package main
 
 import (
+	_ "embed"
+	"fmt"
+
+	"gopkg.in/yaml.v3"
+
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
-	"github.com/pulumi/pulumi/sdk/v3/go/pulumi/config"
 )
+
+//go:embed config.yml
+var configFile []byte
 
 func main() {
 	pulumi.Run(run)
@@ -11,10 +18,8 @@ func main() {
 
 func run(ctx *pulumi.Context) error {
 	var zones []Zone
-
-	conf := config.New(ctx, "")
-	if err := conf.GetObject("zones", &zones); err != nil {
-		return err
+	if err := yaml.Unmarshal(configFile, &zones); err != nil {
+		return fmt.Errorf("decode embedded config: %w", err)
 	}
 
 	for _, z := range zones {

@@ -1,0 +1,34 @@
+- id: msk-homelab1
+  domains:
+    - id: rip
+      name: tie.rip
+  hosts:
+    - name: ubernet
+      addresses:
+        - id: wan
+          value: 2a02:2168:a0f:b171::3
+        - id: wan4
+          value: 95.84.153.149
+    - name: roku
+      addresses:
+        - id: lan
+          value: 2a02:2168:8ec5:f700::1
+        - id: wan
+          value: 2a02:2168:a0f:b171::2
+        # Seems to be unreachable? Needs investigation.
+        #- id: wan4
+        #  value: 95.84.186.7
+    - name: madara
+      addresses:
+        - id: lan
+          value: 2a02:2168:8ec5:f700::942
+  peers:
+    - host: brim.ml
+      name: brim
+  services:
+    - id: minecraft1
+      name: mc
+      host: brim.ml
+      port: 25565
+      proto: _tcp
+      service: _minecraft
