@@ -22,6 +22,10 @@
       addresses:
         - id: lan
           value: 2a02:2168:8ec5:f700::942
+    - name: kazuma
+      addresses:
+        - id: lan
+          value: 2a02:2168:8ec5:f700::aec
   peers:
     - host: brim.ml
       name: brim
