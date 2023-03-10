@@ -6,26 +6,26 @@
     - name: ubernet
       addresses:
         - id: wan
-          value: 2a02:2168:a0f:b171::3
+          value: 2a02:2168:a0f:b1d7::1
         - id: wan4
           value: 95.84.153.149
     - name: roku
       addresses:
         - id: lan
-          value: 2a02:2168:8ec5:f700::1
+          value: 2a02:2168:8ed2:da00::1
         - id: wan
-          value: 2a02:2168:a0f:b171::2
+          value: 2a02:2168:a0f:b1d7::2
         # Seems to be unreachable? Needs investigation.
         #- id: wan4
         #  value: 95.84.186.7
     - name: madara
       addresses:
         - id: lan
-          value: 2a02:2168:8ec5:f700::942
+          value: 2a02:2168:8ed2:da00::942
     - name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ec5:f700::aec
+          value: 2a02:2168:8ed2:da00::aec
   peers:
     - host: brim.ml
       name: brim
