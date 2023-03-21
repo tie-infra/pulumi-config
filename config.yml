@@ -25,7 +25,7 @@
     - name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ed2:da00::aec
+          value: 2a02:2168:8ed2:da00::438
   peers:
     - host: brim.ml
       name: brim
