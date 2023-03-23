@@ -3,29 +3,28 @@
     - id: rip
       name: tie.rip
   hosts:
-    - name: ubernet
-      addresses:
-        - id: wan
-          value: 2a02:2168:a0f:b1d7::1
-        - id: wan4
-          value: 95.84.153.149
-    - name: roku
+    - name: eerie
       addresses:
         - id: lan
-          value: 2a02:2168:8ed2:da00::1
+          value: 2a02:2168:8ec3:d500::1
         - id: wan
-          value: 2a02:2168:a0f:b1d7::2
-        # Seems to be unreachable? Needs investigation.
-        #- id: wan4
-        #  value: 95.84.186.7
+          value: 2a02:2168:a0f:b1d7::3
+    #- name: ubernet
+    #  addresses:
+    #    - id: wan
+    #      value: 2a02:2168:a0f:b1d7::1
+    #    - id: wan4
+    #      value: 95.84.153.149
     - name: madara
       addresses:
         - id: lan
-          value: 2a02:2168:8ed2:da00::942
+          value: 2a02:2168:8ec3:d500::469
+        - id: wlan
+          value: 2a02:2168:8ec3:d504::1
     - name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ed2:da00::438
+          value: 2a02:2168:8ec3:d500::6f7
   peers:
     - host: brim.ml
       name: brim
