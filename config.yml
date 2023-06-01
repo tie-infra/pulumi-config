@@ -41,6 +41,9 @@
   aliases:
     - id: root
       host: saitama.@
+    - id: jellyfin
+      name: jellyfin
+      host: saitama.@
     - id: brim
       name: brim
       host: brim.ml
