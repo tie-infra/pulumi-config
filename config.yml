@@ -44,6 +44,15 @@
     - id: jellyfin
       name: jellyfin
       host: saitama.@
+    - id: radarr
+      name: radarr
+      host: saitama.@
+    - id: sonarr
+      name: sonarr
+      host: saitama.@
+    - id: prowlarr
+      name: prowlarr
+      host: saitama.@
     - id: brim
       name: brim
       host: brim.ml
