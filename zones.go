@@ -1,39 +1,74 @@
 package main
 
 import (
+	"net"
 	"strings"
 
 	"github.com/pulumi/pulumi-cloudflare/sdk/v3/go/cloudflare"
 	"github.com/pulumi/pulumi/sdk/v3/go/pulumi"
 )
 
+// Zone defines a group of domains with records.
 type Zone struct {
+	// ID is a unique identifier for the zone. It is used as part of the
+	// Pulumi resource ID and is expected to be human-readable and
+	// descriptive enough in the configuration file.
 	ID string
 
+	// Domains
 	Domains  []Domain
 	Hosts    []Host
-	Peers    []Peer
+	Aliases  []Alias
 	Services []Service
 }
 
+// Domain defines a managed DNS domain.
 type Domain struct {
-	ID   string
+	// ID is a unique identifier for the domain. It is used as part of the
+	// Pulumi resource ID and is expected to be human-readable and
+	// descriptive enough in the configuration file.
+	ID string
+	// Name is the name of the registered domain.
 	Name string
 }
 
+// Host defines mapping from the subdomain to the host IP addresses.
 type Host struct {
-	Name      string
+	// ID is a unique identifier for a group of records. It is used as part
+	// of the Pulumi resource ID and is expected to be human-readable and
+	// descriptive enough in the configuration file.
+	ID string
+	// Name is the name of the host and subdomain.
+	Name string
+	// Addresses is a list of IP addresses of the host. A or AAAA record
+	// will be created on the subdomain for each address in the list.
 	Addresses []HostAddress
 }
 
+// HostAddress defines an A or AAAA DNS record.
 type HostAddress struct {
-	ID    string
-	Value string
+	// ID is a unique identifier for the record. It is used as part of the
+	// Pulumi resource ID and is expected to be human-readable and
+	// descriptive enough in the configuration file.
+	ID string
+	// Value is the IP address of the host.
+	Value net.IP
 }
 
-type Peer struct {
+// Alias defines a CNAME DNS record.
+type Alias struct {
+	// ID is a unique identifier for the record. It is used as part of the
+	// Pulumi resource ID and is expected to be human-readable and
+	// descriptive enough in the configuration file.
+	ID string
+	// Name is the name of the DNS record. If empty, defaults to @ (root
+	// domain).
 	Name string
+	// Host is the value for the CNAME DNS record.
 	Host string
+	// Proxied enables Cloudflare proxy for the DNS record.
+	// See https://developers.cloudflare.com/dns/manage-dns-records/reference/proxied-dns-records
+	Proxied bool
 }
 
 type Service struct {
@@ -87,7 +122,7 @@ func setupZoneDomain(ctx *pulumi.Context, z *Zone, d *Domain) error {
 	if err := setupHosts(ctx, zone, z, d); err != nil {
 		return err
 	}
-	if err := setupPeers(ctx, zone, z, d); err != nil {
+	if err := setupAliases(ctx, zone, z, d); err != nil {
 		return err
 	}
 	if err := setupServices(ctx, zone, z, d); err != nil {
@@ -115,39 +150,50 @@ func setupHost(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, h
 }
 
 func setupHostAddress(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, host *Host, addr *HostAddress) error {
-	resourceName := joinDash(z.ID, d.ID, host.Name, addr.ID)
+	resourceName := joinDash(z.ID, d.ID, host.ID, addr.ID)
 
 	typ := "AAAA"
-	if !strings.Contains(addr.Value, ":") {
+	if addr.Value.To4() != nil {
 		typ = "A"
 	}
 
 	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
 		ZoneId: zone.ID(),
 		Name:   pulumi.String(host.Name),
-		Value:  pulumi.String(addr.Value),
+		Value:  pulumi.String(addr.Value.String()),
 		Type:   pulumi.String(typ),
 	})
 	return err
 }
 
-func setupPeers(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain) error {
-	for _, peer := range z.Peers {
-		if err := setupPeer(ctx, zone, z, d, &peer); err != nil {
+func setupAliases(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain) error {
+	for _, alias := range z.Aliases {
+		if err := setupAlias(ctx, zone, z, d, &alias); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func setupPeer(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, peer *Peer) error {
-	resourceName := joinDash(z.ID, d.ID, peer.Name)
+func setupAlias(ctx *pulumi.Context, zone *cloudflare.Zone, z *Zone, d *Domain, alias *Alias) error {
+	resourceName := joinDash(z.ID, d.ID, alias.ID)
+
+	name := alias.Name
+	if name == "" {
+		name = "@"
+	}
+
+	// Looks like the replacement we have to do here manually does not work
+	// over API, although it is possible to set CNAME for subdomain in
+	// Cloudflare dashboard.
+	host := strings.ReplaceAll(alias.Host, "@", d.Name)
 
 	_, err := cloudflare.NewRecord(ctx, resourceName, &cloudflare.RecordArgs{
-		ZoneId: zone.ID(),
-		Name:   pulumi.String(peer.Name),
-		Value:  pulumi.String(peer.Host),
-		Type:   pulumi.String("CNAME"),
+		ZoneId:  zone.ID(),
+		Name:    pulumi.String(name),
+		Value:   pulumi.String(host),
+		Proxied: pulumi.Bool(alias.Proxied),
+		Type:    pulumi.String("CNAME"),
 	})
 	return err
 }
