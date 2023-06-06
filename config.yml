@@ -7,9 +7,9 @@
       name: eerie
       addresses:
         - id: lan
-          value: 2a02:2168:8ec3:d500::1
+          value: 2a02:2168:8ecb:6d00::1
         - id: wan
-          value: 2a02:2168:a0f:b1d7::3
+          value: 2a02:2168:a0f:bc6b::1
 
     #- id: ubernet
     #  name: ubernet
@@ -23,20 +23,20 @@
       name: madara
       addresses:
         - id: lan
-          value: 2a02:2168:8ec3:d500::469
+          value: 2a02:2168:8ecb:6d00::469
         - id: wlan
-          value: 2a02:2168:8ec3:d504::1
+          value: 2a02:2168:8ecb:6d04::1
 
     - id: saitama
       name: saitama
       addresses:
         - id: lan
-          value: 2a02:2168:8ec3:d500::7c9
+          value: 2a02:2168:8ecb:6d00::7c9
     - id: kazuma
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ec3:d500::6f7
+          value: 2a02:2168:8ecb:6d00::6f7
 
   aliases:
     - id: root
