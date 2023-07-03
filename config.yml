@@ -10,15 +10,6 @@
           value: 2a02:2168:8ecb:6d00::1
         - id: wan
           value: 2a02:2168:a0f:bc6b::1
-
-    #- id: ubernet
-    #  name: ubernet
-    #  addresses:
-    #    - id: wan
-    #      value: 2a02:2168:a0f:b1d7::1
-    #    - id: wan4
-    #      value: 95.84.153.149
-
     - id: madara
       name: madara
       addresses:
@@ -26,17 +17,21 @@
           value: 2a02:2168:8ecb:6d00::469
         - id: wlan
           value: 2a02:2168:8ecb:6d04::1
-
+    - id: akane
+      name: akane
+      addresses:
+        - id: lan
+          value: 2a02:2168:8ecb:6d00::6da
     - id: saitama
       name: saitama
       addresses:
         - id: lan
-          value: 2a02:2168:8ecb:6d00::7c9
+          value: 2a02:2168:8ecb:6d00::ffb
     - id: kazuma
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ecb:6d00::6f7
+          value: 2a02:2168:8ecb:6d00::d07
 
   aliases:
     - id: root
@@ -49,12 +44,12 @@
       host: saitama.@
     - id: brim
       name: brim
-      host: brim.ml
+      host: join.brim.ml
 
   services:
     - id: minecraft1
       name: mc
-      host: brim.ml
+      host: join.brim.ml
       port: 25565
       proto: _tcp
       service: _minecraft
