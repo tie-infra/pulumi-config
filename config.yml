@@ -42,6 +42,12 @@
     - id: sonarr
       name: sonarr
       host: saitama.@
+    - id: flood
+      name: flood
+      host: saitama.@
+    - id: jackett
+      name: jackett
+      host: saitama.@
     - id: brim
       name: brim
       host: join.brim.ml
