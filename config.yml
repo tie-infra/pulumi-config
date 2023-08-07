@@ -50,7 +50,7 @@
       host: saitama.@
     - id: brim
       name: brim
-      host: join.brim.ml
+      host: join.brim.su
 
   services:
     - id: minecraft1
