@@ -45,6 +45,9 @@
     - id: radarr
       name: radarr
       host: saitama.@
+    - id: prowlarr
+      name: prowlarr
+      host: saitama.@
     - id: flood
       name: flood
       host: saitama.@
