@@ -61,7 +61,7 @@
   services:
     - id: minecraft1
       name: mc
-      host: join.brim.ml
+      host: join.brim.su
       port: 25565
       proto: _tcp
       service: _minecraft
