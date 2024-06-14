@@ -7,31 +7,24 @@
       name: eerie
       addresses:
         - id: lan
-          value: 2a02:2168:8f95:400::1
+          value: 2a02:2168:8ec7:8b00::1
         - id: wan
-          value: 2a02:2168:a0f:bd94::1
-    - id: madara
-      name: madara
-      addresses:
-        - id: lan
-          value: 2a02:2168:8f95:400::469
-        - id: wlan
-          value: 2a02:2168:8f95:404::1
+          value: 2a02:2168:a0f:bd94::3
     - id: akane
       name: akane
       addresses:
         - id: lan
-          value: 2a02:2168:8f95:400::6da
+          value: 2a02:2168:8ec7:8b00::6da
     - id: saitama
       name: saitama
       addresses:
         - id: lan
-          value: 2a02:2168:8f95:400::ffb
+          value: 2a02:2168:8ec7:8b00::ffb
     - id: kazuma
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8f95:400::d07
+          value: 2a02:2168:8ec7:8b00::d07
 
   aliases:
     - id: root
@@ -50,9 +43,6 @@
       host: saitama.@
     - id: flood
       name: flood
-      host: saitama.@
-    - id: jackett
-      name: jackett
       host: saitama.@
     - id: brim
       name: brim
