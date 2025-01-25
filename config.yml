@@ -14,7 +14,7 @@
       name: eerie
       addresses:
         - id: lan
-          value: 2a02:2168:8ef2:dd00::1
+          value: 2a02:2168:8ef4:1500::1
         - id: wan
           value: 2a02:2168:a0f:bd94::2
     - id: akane
@@ -26,12 +26,12 @@
       name: saitama
       addresses:
         - id: lan
-          value: 2a02:2168:8ef2:dd00::ffb
+          value: 2a02:2168:8ef4:1500::ffb
     - id: kazuma
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ef2:dd00::d07
+          value: 2a02:2168:8ef4:1500::d07
 
   aliases:
     - id: root
