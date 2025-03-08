@@ -20,8 +20,8 @@
     - id: akane
       name: akane
       addresses:
-        - id: lan
-          value: 2a02:2168:a0f:bd94::3
+        - id: wan
+          value: 2a02:2168:a0f:bd94::1
     - id: saitama
       name: saitama
       addresses:
