@@ -9,7 +9,7 @@
         - id: wan
           value: 2a01:4f8:222:1618::1
         - id: wan4
-          value: 95.84.235.180
+          value: 213.133.111.103
     - id: eerie
       name: eerie
       addresses:
