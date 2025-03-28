@@ -31,7 +31,7 @@
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ef4:1500::a28
+          value: 2a02:2168:8ef4:1500::d07
 
   aliases:
     - id: root
