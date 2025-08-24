@@ -26,12 +26,12 @@
       name: saitama
       addresses:
         - id: lan
-          value: 2a02:2168:8ef4:1500::ffb
+          value: 2a02:2168:8edf:2300:f22f:74ff:fe33:727d
     - id: kazuma
       name: kazuma
       addresses:
         - id: lan
-          value: 2a02:2168:8ef4:1500::d07
+          value: 2a02:2168:8edf:2300:642:1aff:fe24:7cf1
 
   aliases:
     - id: root
