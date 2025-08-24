@@ -22,6 +22,8 @@
       addresses:
         - id: wan
           value: 2a02:2168:a0f:bd94::1
+        - id: wan4
+          value: 178.140.50.38
     - id: saitama
       name: saitama
       addresses:
@@ -35,7 +37,7 @@
 
   aliases:
     - id: root
-      host: saitama.@
+      host: akane.@
     - id: jellyfin
       name: jellyfin
       host: saitama.@
