@@ -23,7 +23,12 @@
         - id: wan
           value: 2a02:2168:a0f:bd94::1
         - id: wan4
-          value: 178.140.50.38
+          value: &akane4 178.140.50.38
+    - id: akane4
+      name: akane4
+      addresses:
+        - id: wan4
+          value: *akane4
     - id: saitama
       name: saitama
       addresses:
