@@ -43,6 +43,9 @@
   aliases:
     - id: root
       host: akane.@
+    - id: vless
+      name: vless
+      host: akane.@
     - id: jellyfin
       name: jellyfin
       host: saitama.@
