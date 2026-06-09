@@ -43,6 +43,9 @@
   aliases:
     - id: root
       host: akane.@
+    - id: mcp
+      name: mcp
+      host: akane.@
     - id: vless
       name: vless
       host: akane.@
