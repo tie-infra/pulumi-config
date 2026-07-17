@@ -57,6 +57,9 @@
     - id: flood
       name: flood
       host: saitama.@
+    - id: diskovod
+      name: diskovod
+      host: falcon.@
     - id: brim
       name: brim
       host: join.brim.su
